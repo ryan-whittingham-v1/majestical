@@ -5,13 +5,16 @@ import PropTypes from 'prop-types';
 function Project(props) {
   return (
     <React.Fragment>
-      <h3>
-        {props.name} - {props.duration} {props.duration > 1 ? 'hours' : 'hour'}
-      </h3>
-      <p>
-        <em>{props.instructions}</em>
-      </p>
-      <hr />
+      <div onClick={() => props.whenProjectClicked(props.id)}>
+        <h3>
+          {props.name} - {props.duration}{' '}
+          {props.duration > 1 ? 'hours' : 'hour'}
+        </h3>
+        <p>
+          <em>{props.instructions}</em>
+        </p>
+        <hr />
+      </div>
     </React.Fragment>
   );
 }
@@ -20,6 +23,8 @@ Project.propTypes = {
   name: PropTypes.string.isRequired,
   duration: PropTypes.number.isRequired,
   instructions: PropTypes.string.isRequired,
+  id: PropTypes.string,
+  whenProjectClicked: PropTypes.func,
 };
 
 export default Project;

@@ -2,6 +2,7 @@ import React from 'react';
 
 import { v4 } from 'uuid';
 import PropTypes from 'prop-types';
+import ReusableForm from './ReusableForm';
 
 function NewProjectForm(props) {
   function handleNewProjectFormSubmission(event) {
@@ -16,12 +17,10 @@ function NewProjectForm(props) {
 
   return (
     <React.Fragment>
-      <form onSubmit={handleNewProjectFormSubmission}>
-        <input type="text" name="name" placeholder="Name" />
-        <input type="number" name="duration" placeholder="Duration" />
-        <textarea name="instructions" placeholder="Instructions" />
-        <button type="submit">Add</button>
-      </form>
+      <ReusableForm
+        formSubmissionHandler={handleNewProjectFormSubmission}
+        buttonText="Add Project"
+      />
     </React.Fragment>
   );
 }

@@ -7,12 +7,15 @@ function ProjectList(props) {
   return (
     <React.Fragment>
       <hr />
-      {props.projectList.map((project, index) => (
+      {Object.values(props.projectList).map((project) => (
         <Project
+          whenProjectClicked={props.onProjectSelection}
           name={project.name}
           duration={project.duration}
           instructions={project.instructions}
-          key={index}
+          formattedWaitTime={project.formattedWaitTime}
+          id={project.id}
+          key={project.id}
         />
       ))}
     </React.Fragment>
@@ -20,7 +23,8 @@ function ProjectList(props) {
 }
 
 ProjectList.propTypes = {
-  projectList: PropTypes.array,
+  projectList: PropTypes.object,
+  onProjectSelection: PropTypes.func,
 };
 
 export default ProjectList;
