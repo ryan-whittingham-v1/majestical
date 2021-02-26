@@ -12,6 +12,8 @@ function EditProjectForm(props) {
       duration: parseInt(event.target.duration.value),
       instructions: event.target.instructions.value,
       id: project.id,
+      timeOpen: project.timeOpen,
+      formattedWaitTime: project.formattedWaitTime,
     });
   }
 

@@ -4,43 +4,62 @@ import ProjectList from './ProjectList';
 import ProjectDetail from './ProjectDetail';
 import EditProjectForm from './EditProjectForm';
 import { connect } from 'react-redux';
+import * as a from './../actions/index';
 
 class ProjectControl extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      formVisibleOnPage: false,
       selectedProject: null,
       editing: false,
     };
   }
 
+  componentDidMount() {
+    this.waitTimeUpdateTimer = setInterval(
+      () => this.updateProjectWaitTime(),
+      60000
+    );
+  }
+
+  componentDidUpdate() {
+    console.log('component updated!');
+  }
+
+  componentWillUnmount() {
+    console.log('component unmounted!');
+    clearInterval(this.waitTimeUpdateTimer);
+  }
+
+  updateProjectWaitTime = () => {
+    const { dispatch } = this.props;
+    Object.values(this.props.masterProjectList).forEach((project) => {
+      const newFormattedWaitTime = project.timeOpen.fromNow(true);
+      const action = a.updateTime(project.id, newFormattedWaitTime);
+      dispatch(action);
+    });
+  };
+
   handleClick = () => {
     if (this.state.selectedProject != null) {
       this.setState({
-        formVisibleOnPage: false,
         selectedProject: null,
         editing: false,
       });
     } else {
-      this.setState((prevState) => ({
-        formVisibleOnPage: !prevState.formVisibleOnPage,
-      }));
+      const { dispatch } = this.props;
+      const action = a.toggleForm();
+      dispatch(action);
     }
   };
 
   handleAddingNewProjectToList = (newProject) => {
     const { dispatch } = this.props;
     const { id, name, duration, instructions } = newProject;
-    const action = {
-      type: 'ADD_PROJECT',
-      id: id,
-      name: name,
-      duration: duration,
-      instructions: instructions,
-    };
+    const action = a.addProject(newProject);
     dispatch(action);
-    this.setState({ formVisibleOnPage: false });
+    const action2 = a.toggleForm();
+    dispatch(action2);
   };
 
   handleChangingSelectedProject = (id) => {
@@ -50,10 +69,7 @@ class ProjectControl extends React.Component {
 
   handleDeletingProject = (id) => {
     const { dispatch } = this.props;
-    const action = {
-      type: 'DELETE_PROJECT',
-      id: id,
-    };
+    const action = a.deleteProject(id);
     dispatch(action);
     this.setState({ selectedProject: null });
   };
@@ -64,18 +80,11 @@ class ProjectControl extends React.Component {
 
   handleEditingProjectInList = (projectToEdit) => {
     const { dispatch } = this.props;
-    const { id, name, duration, instructions } = projectToEdit;
-    const action = {
-      type: 'ADD_PROJECT',
-      id: id,
-      name: name,
-      duration: duration,
-      instructions: instructions,
-    };
+    const action = a.addProject(projectToEdit);
     dispatch(action);
     this.setState({
       editing: false,
-      selectedTicket: null,
+      selectedProject: null,
     });
   };
 
@@ -100,7 +109,7 @@ class ProjectControl extends React.Component {
         />
       );
       buttonText = 'Return to Project List';
-    } else if (this.state.formVisibleOnPage) {
+    } else if (this.props.formVisibleOnPage) {
       currentlyVisibleState = (
         <NewProjectForm
           onNewProjectCreation={this.handleAddingNewProjectToList}
@@ -128,7 +137,8 @@ class ProjectControl extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    masterProjectList: state,
+    masterProjectList: state.masterProjectList,
+    formVisibleOnPage: state.formVisibleOnPage,
   };
 };
 

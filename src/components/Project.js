@@ -13,6 +13,9 @@ function Project(props) {
         <p>
           <em>{props.instructions}</em>
         </p>
+        <p>
+          <em>{props.formattedWaitTime}</em>
+        </p>
         <hr />
       </div>
     </React.Fragment>
@@ -25,6 +28,7 @@ Project.propTypes = {
   instructions: PropTypes.string.isRequired,
   id: PropTypes.string,
   whenProjectClicked: PropTypes.func,
+  formattedWaitTime: PropTypes.string,
 };
 
 export default Project;

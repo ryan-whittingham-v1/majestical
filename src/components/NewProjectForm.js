@@ -3,6 +3,7 @@ import React from 'react';
 import { v4 } from 'uuid';
 import PropTypes from 'prop-types';
 import ReusableForm from './ReusableForm';
+import Moment from 'moment';
 
 function NewProjectForm(props) {
   function handleNewProjectFormSubmission(event) {
@@ -12,6 +13,8 @@ function NewProjectForm(props) {
       duration: parseInt(event.target.duration.value),
       instructions: event.target.instructions.value,
       id: v4(),
+      timeOpen: new Moment(),
+      formattedWaitTime: new Moment().fromNow(true),
     });
   }
 
