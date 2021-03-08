@@ -1,20 +1,26 @@
 import React from 'react';
 import ReusableForm from './ReusableForm';
 import PropTypes from 'prop-types';
+import { useFirestore } from 'react-redux-firebase';
 
 function EditProjectForm(props) {
   const { project } = props;
 
+  const firestore = useFirestore();
+
   function handleEditProjectFormSubmission(event) {
     event.preventDefault();
-    props.onEditProject({
+    props.onEditProject();
+    const propertiesToUpdate = {
       name: event.target.name.value,
-      duration: parseInt(event.target.duration.value),
+      duration: event.target.duration.value,
       instructions: event.target.instructions.value,
-      id: project.id,
-      timeOpen: project.timeOpen,
-      formattedWaitTime: project.formattedWaitTime,
-    });
+    };
+    console.log(event.target);
+    return firestore.update(
+      { collection: 'projects', doc: project.id },
+      propertiesToUpdate
+    );
   }
 
   return (

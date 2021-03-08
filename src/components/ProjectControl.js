@@ -5,6 +5,7 @@ import ProjectDetail from './ProjectDetail';
 import EditProjectForm from './EditProjectForm';
 import { connect } from 'react-redux';
 import * as a from './../actions/index';
+import { withFirestore } from 'react-redux-firebase';
 
 class ProjectControl extends React.Component {
   constructor(props) {
@@ -53,24 +54,28 @@ class ProjectControl extends React.Component {
     }
   };
 
-  handleAddingNewProjectToList = (newProject) => {
+  handleAddingNewProjectToList = () => {
     const { dispatch } = this.props;
-    const { id, name, duration, instructions } = newProject;
-    const action = a.addProject(newProject);
+    const action = a.toggleForm();
     dispatch(action);
-    const action2 = a.toggleForm();
-    dispatch(action2);
   };
 
   handleChangingSelectedProject = (id) => {
-    const selectedProject = this.props.masterProjectList[id];
-    this.setState({ selectedProject: selectedProject });
+    this.props.firestore
+      .get({ collection: 'projects', doc: id })
+      .then((project) => {
+        const firestoreProject = {
+          name: project.get('name'),
+          duration: project.get('duration'),
+          instructions: project.get('instructions'),
+          id: project.id,
+        };
+        this.setState({ selectedProject: firestoreProject });
+      });
   };
 
   handleDeletingProject = (id) => {
-    const { dispatch } = this.props;
-    const action = a.deleteProject(id);
-    dispatch(action);
+    this.props.firestore.delete({ collection: 'projects', doc: id });
     this.setState({ selectedProject: null });
   };
 
@@ -78,13 +83,10 @@ class ProjectControl extends React.Component {
     this.setState({ editing: true });
   };
 
-  handleEditingProjectInList = (projectToEdit) => {
-    const { dispatch } = this.props;
-    const action = a.addProject(projectToEdit);
-    dispatch(action);
+  handleEditingProjectInList = () => {
     this.setState({
       editing: false,
-      selectedProject: null,
+      selectedTicket: null,
     });
   };
 
@@ -144,4 +146,4 @@ const mapStateToProps = (state) => {
 
 ProjectControl = connect(mapStateToProps)(ProjectControl);
 
-export default ProjectControl;
+export default withFirestore(ProjectControl);
