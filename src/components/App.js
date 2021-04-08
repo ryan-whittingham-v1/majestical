@@ -1,13 +1,14 @@
 import React from 'react';
 import Header from './Header';
-import ProjectControl from './ProjectControl';
+import JobControl from './JobControl';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 function App() {
   return (
-    <React.Fragment>
+    <Router>
       <Header />
-      <ProjectControl />
-    </React.Fragment>
+      <JobControl />
+    </Router>
   );
 }
 

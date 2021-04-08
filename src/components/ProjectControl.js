@@ -3,9 +3,11 @@ import NewProjectForm from './NewProjectForm';
 import ProjectList from './ProjectList';
 import ProjectDetail from './ProjectDetail';
 import EditProjectForm from './EditProjectForm';
+import Information from './Information';
+
 import { connect } from 'react-redux';
 import * as a from './../actions/index';
-import { withFirestore } from 'react-redux-firebase';
+import { withFirestore, isLoaded } from 'react-redux-firebase';
 
 class ProjectControl extends React.Component {
   constructor(props) {
@@ -15,31 +17,6 @@ class ProjectControl extends React.Component {
       editing: false,
     };
   }
-
-  componentDidMount() {
-    this.waitTimeUpdateTimer = setInterval(
-      () => this.updateProjectWaitTime(),
-      60000
-    );
-  }
-
-  componentDidUpdate() {
-    console.log('component updated!');
-  }
-
-  componentWillUnmount() {
-    console.log('component unmounted!');
-    clearInterval(this.waitTimeUpdateTimer);
-  }
-
-  updateProjectWaitTime = () => {
-    const { dispatch } = this.props;
-    Object.values(this.props.masterProjectList).forEach((project) => {
-      const newFormattedWaitTime = project.timeOpen.fromNow(true);
-      const action = a.updateTime(project.id, newFormattedWaitTime);
-      dispatch(action);
-    });
-  };
 
   handleClick = () => {
     if (this.state.selectedProject != null) {
@@ -86,47 +63,63 @@ class ProjectControl extends React.Component {
   handleEditingProjectInList = () => {
     this.setState({
       editing: false,
-      selectedTicket: null,
+      selectedProject: null,
     });
   };
 
   render() {
     let currentlyVisibleState = null;
     let buttonText = null;
+    const auth = this.props.firebase.auth();
 
-    if (this.state.editing) {
-      currentlyVisibleState = (
-        <EditProjectForm
-          project={this.state.selectedProject}
-          onEditProject={this.handleEditingProjectInList}
-        />
+    if (!isLoaded(auth)) {
+      return (
+        <React.Fragment>
+          <h1>Loading...</h1>
+        </React.Fragment>
       );
-      buttonText = 'Return to Project List';
-    } else if (this.state.selectedProject != null) {
-      currentlyVisibleState = (
-        <ProjectDetail
-          project={this.state.selectedProject}
-          onClickingDelete={this.handleDeletingProject}
-          onClickingEdit={this.handleEditClick}
-        />
-      );
-      buttonText = 'Return to Project List';
-    } else if (this.props.formVisibleOnPage) {
-      currentlyVisibleState = (
-        <NewProjectForm
-          onNewProjectCreation={this.handleAddingNewProjectToList}
-        />
-      );
-      buttonText = 'Return to Project List';
-    } else {
-      currentlyVisibleState = (
-        <ProjectList
-          projectList={this.props.masterProjectList}
-          onProjectSelection={this.handleChangingSelectedProject}
-        />
-      );
+    }
+    if (isLoaded(auth) && auth.currentUser == null) {
+      return <React.Fragment></React.Fragment>;
+    }
+    if (isLoaded(auth) && auth.currentUser != null) {
+      if (this.state.editing) {
+        currentlyVisibleState = (
+          <EditProjectForm
+            project={this.state.selectedProject}
+            onEditProject={this.handleEditingProjectInList}
+          />
+        );
+        buttonText = 'Return to Project List';
+      } else if (this.state.selectedProject != null) {
+        currentlyVisibleState = (
+          <ProjectDetail
+            project={this.state.selectedProject}
+            onClickingDelete={this.handleDeletingProject}
+            onClickingEdit={this.handleEditClick}
+          />
+        );
+        buttonText = 'Return to Project List';
+      } else if (this.props.formVisibleOnPage) {
+        currentlyVisibleState = (
+          <NewProjectForm
+            onNewProjectCreation={this.handleAddingNewProjectToList}
+          />
+        );
+        buttonText = 'Return to Project List';
+      } else {
+        currentlyVisibleState = (
+          <React.Fragment>
+            <ProjectList
+              projectList={this.props.masterProjectList}
+              onProjectSelection={this.handleChangingSelectedProject}
+            />
+            <Information />
+          </React.Fragment>
+        );
 
-      buttonText = 'Add Project';
+        buttonText = 'Add Project';
+      }
     }
     return (
       <React.Fragment>
@@ -139,7 +132,6 @@ class ProjectControl extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    masterProjectList: state.masterProjectList,
     formVisibleOnPage: state.formVisibleOnPage,
   };
 };

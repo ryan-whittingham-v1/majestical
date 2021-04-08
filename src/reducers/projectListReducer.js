@@ -1,6 +1,6 @@
-import * as c from './../actions/ActionTypes';
+import * as c from '../actions/ActionTypes';
 
-export default (state = {}, action) => {
+export default function projectListReducer(state = {}, action) {
   const { formattedWaitTime, id } = action;
   switch (action.type) {
     case c.DELETE_PROJECT:
@@ -16,4 +16,4 @@ export default (state = {}, action) => {
     default:
       return state;
   }
-};
+}
