@@ -1,7 +1,5 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import SelectJobForm from './SelectJobForm';
-import Information from './Information';
 import JobForm from './JobForm';
 import JobList from './JobList';
 

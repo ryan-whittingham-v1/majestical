@@ -50,6 +50,24 @@ export const dataUpdated = () => ({
   type: c.DATA_UPDATED,
 });
 
+export const requestPartsData = () => ({
+  type: c.REQUEST_PARTS_DATA,
+});
+
+export const getPartsDataSuccess = (data) => ({
+  type: c.GET_PARTS_DATA_SUCCESS,
+  data,
+});
+
+export const getPartsDataFailure = (error) => ({
+  type: c.GET_PARTS_DATA_FAILURE,
+  error,
+});
+
+export const partsDataUpdated = () => ({
+  type: c.PARTS_DATA_UPDATED,
+});
+
 export const makeApiCall = () => {
   var Airtable = require('airtable');
   var base = new Airtable({
@@ -57,7 +75,7 @@ export const makeApiCall = () => {
   }).base('app11sa0xLuE8WuG8');
   return (dispatch) => {
     dispatch(requestData);
-    return base('Job')
+    return base('Jobs')
       .find('recPpaRBCoADziMPO')
       .then((response) => {
         dispatch(getDataSuccess(response));
@@ -76,7 +94,7 @@ export const findJob = (job) => {
   }).base('app11sa0xLuE8WuG8');
   return (dispatch) => {
     dispatch(requestData);
-    return base('Job')
+    return base('Jobs')
       .select({
         // Selecting the first 3 records in Grid view:
         maxRecords: 100,
@@ -87,7 +105,7 @@ export const findJob = (job) => {
           // This function (`page`) will get called for each page of records.
 
           records.forEach(function (record) {
-            if (record.get('Job') === job) {
+            if (record.get('Jobs') === job) {
               console.log('Retrieved', record.get('record'));
               matchingJob = record;
               return;
@@ -125,7 +143,7 @@ export function getJobList() {
   }).base('app11sa0xLuE8WuG8');
   return (dispatch) => {
     dispatch(requestData);
-    return base('Job')
+    return base('Jobs')
       .select({
         // Selecting the first 3 records in Grid view:
         maxRecords: 500,
@@ -157,3 +175,21 @@ export function getJobList() {
       );
   };
 }
+
+export const getPart = (part) => {
+  var Airtable = require('airtable');
+  var base = new Airtable({
+    apiKey: `${process.env.REACT_APP_AIRTABLE_API_KEY}`,
+  }).base('app11sa0xLuE8WuG8');
+  return (dispatch) => {
+    dispatch(requestPartsData);
+    return base('Parts').find(part, function (err, record) {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      dispatch(getPartsDataSuccess(record));
+      console.log('Retrieved', record.id);
+    });
+  };
+};

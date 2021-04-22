@@ -43,7 +43,7 @@ class JobList extends React.Component {
                   Job={job.fields.Number}
                   Name={job.fields.Name}
                   dueDate={job.fields.dueDate}
-                  activityList={job.fields.activityList}
+                  parts={job.fields.Parts}
                   key={job.fields.record}
                   id={job.fields.record}
                 />

@@ -1,0 +1,11 @@
+.pastDue {
+  border-right-style: solid;
+  border-color: red;
+  border-width: 20px;
+}
+
+.onTime {
+  border-right-style: solid;
+  border-color: green;
+  border-width: 20px;
+}
